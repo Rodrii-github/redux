@@ -1,42 +1,42 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
+import { combineReducers } from "redux";
 import TodoItem from "./components/TodoItem";
 
-const initialState = {
-  entities: [],
-  visibilityFilter: "ALL", // "COMPLETE" || "INCOMPLETE"
+
+export const filterReducer = (state = "ALL", action) => {
+  switch (action.type) {
+    case "SET_FILTER":
+      return action.payload;
+    default:
+      return state;
+  }
 };
 
-export const reducer = (state = initialState, action) => {
+export const todosReducer = (state = [], action) => {
   switch (action.type) {
     case "ADD_TODO": {
-      return {
-        ...state,
-        entities: state.entities.concat({ ...action.payload }),
-      };
+      return state.concat({ ...action.payload });
     }
     case "COMPLETE_TODO": {
-      const newTodos = state.entities.map((todo) => {
+      const newTodos = state.map((todo) => {
         if (todo.id === action.payload.id) {
           return { ...todo, complete: !todo.complete };
         }
         return todo;
       });
-      return {
-        ...state,
-        entities: newTodos,
-      };
-    }
-    case "SET_FILTER": {
-      return {
-        ...state,
-        visibilityFilter: action.payload,
-      };
+      return newTodos;
     }
     default:
       return state;
   }
 };
+
+export const reducer = combineReducers({
+  entities: todosReducer,
+  visibilityFilter: filterReducer,
+});
+
 
 const selectTodos = (state) => {
   const { entities, visibilityFilter } = state;
