@@ -3,6 +3,16 @@ import { useState } from "react";
 import { combineReducers } from "redux";
 import TodoItem from "./components/TodoItem";
 
+export const asyncMiddleware = (store) => (next) => (action) => {
+  if (typeof action === "function") {
+    return action(store.dispatch, store.getState);
+  }
+  return next(action);
+};
+
+export const fetchThunk = () => (dispatch) => {
+  console.log("soy un thunk", dispatch);
+};
 
 export const filterReducer = (state = "ALL", action) => {
   switch (action.type) {
@@ -36,7 +46,6 @@ export const reducer = combineReducers({
   entities: todosReducer,
   visibilityFilter: filterReducer,
 });
-
 
 const selectTodos = (state) => {
   const { entities, visibilityFilter } = state;
@@ -84,6 +93,7 @@ const App = () => {
       >
         Incompletos
       </button>
+      <button onClick={() => dispatch(fetchThunk())}>Fetch</button>
       <ul>
         {todos.map((todo) => (
           <TodoItem key={todo.id} todo={todo} />
