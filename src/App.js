@@ -4,6 +4,7 @@ import TodoItem from "./components/TodoItem";
 
 const initialState = {
   entities: [],
+  visibilityFilter: "ALL", // "COMPLETE" || "INCOMPLETE"
 };
 
 export const reducer = (state = initialState, action) => {
@@ -26,15 +27,33 @@ export const reducer = (state = initialState, action) => {
         entities: newTodos,
       };
     }
+    case "SET_FILTER": {
+      return {
+        ...state,
+        visibilityFilter: action.payload,
+      };
+    }
     default:
       return state;
   }
 };
 
+const selectTodos = (state) => {
+  const { entities, visibilityFilter } = state;
+
+  if (visibilityFilter === "COMPLETE") {
+    return entities.filter((todo) => todo.complete);
+  }
+  if (visibilityFilter === "INCOMPLETE") {
+    return entities.filter((todo) => !todo.complete);
+  }
+  return entities;
+};
+
 const App = () => {
   const [value, setValue] = useState("");
   const dispatch = useDispatch();
-  const state = useSelector((state) => state);
+  const todos = useSelector(selectTodos);
 
   const submit = (e) => {
     e.preventDefault();
@@ -52,11 +71,21 @@ const App = () => {
       <form onSubmit={submit}>
         <input value={value} onChange={(e) => setValue(e.target.value)} />
       </form>
-      <button>Mostrar Todos</button>
-      <button>Completados</button>
-      <button>Incompletos</button>
+      <button onClick={() => dispatch({ type: "SET_FILTER", payload: "ALL" })}>
+        Mostrar Todos
+      </button>
+      <button
+        onClick={() => dispatch({ type: "SET_FILTER", payload: "COMPLETE" })}
+      >
+        Completados
+      </button>
+      <button
+        onClick={() => dispatch({ type: "SET_FILTER", payload: "INCOMPLETE" })}
+      >
+        Incompletos
+      </button>
       <ul>
-        {state.entities.map((todo) => (
+        {todos.map((todo) => (
           <TodoItem key={todo.id} todo={todo} />
         ))}
       </ul>
