@@ -1,41 +1,67 @@
+import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import TodoItem from "./components/TodoItem";
 
-export const reducer = (state = 0, action) => {
-  console.log({ action, state });
+const initialState = {
+  entities: [],
+};
+
+export const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case "increment":
-      return state + 1;
-    case "decrement":
-      return state - 1;
-    case "set":
-      return action.payload;
+    case "ADD_TODO": {
+      return {
+        ...state,
+        entities: state.entities.concat({ ...action.payload }),
+      };
+    }
+    case "COMPLETE_TODO": {
+      const newTodos = state.entities.map((todo) => {
+        if (todo.id === action.payload.id) {
+          return { ...todo, complete: !todo.complete };
+        }
+        return todo;
+      });
+      return {
+        ...state,
+        entities: newTodos,
+      };
+    }
     default:
       return state;
   }
 };
 
-function App() {
+const App = () => {
   const [value, setValue] = useState("");
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
-  const set = () => {
-    dispatch({ type: "set", payload: value });
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (!value.trim()) {
+      return;
+    }
+    const id = Math.random().toString(36);
+    const todo = { title: value, complete: false, id: id };
+    dispatch({ type: "ADD_TODO", payload: todo });
     setValue("");
   };
+
   return (
     <div>
-      <p>Contador: {state}</p>
-      <button onClick={() => dispatch({ type: "increment" })}>
-        Incrementar
-      </button>
-      <button onClick={() => dispatch({ type: "decrement" })}>
-        Decrementar
-      </button>
-      <button onClick={set}>Set</button>
-      <input value={value} onChange={(e) => setValue(Number(e.target.value))} />
+      <form onSubmit={submit}>
+        <input value={value} onChange={(e) => setValue(e.target.value)} />
+      </form>
+      <button>Mostrar Todos</button>
+      <button>Completados</button>
+      <button>Incompletos</button>
+      <ul>
+        {state.entities.map((todo) => (
+          <TodoItem key={todo.id} todo={todo} />
+        ))}
+      </ul>
     </div>
   );
-}
+};
 
 export default App;
