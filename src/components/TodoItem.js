@@ -1,11 +1,11 @@
 import { useDispatch } from "react-redux";
 
-const TodoItems = ({ todo }) => {
+const TodoItems = ({ todo, setComplete }) => {
   const dispatch = useDispatch();
   return (
     <li
       style={{ textDecoration: todo.complete ? "line-through" : "none" }}
-      onClick={() => dispatch({ type: "COMPLETE_TODO", payload: todo })}
+      onClick={() => dispatch(setComplete(todo))}
     >
       {todo.title}
     </li>
