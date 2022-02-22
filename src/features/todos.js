@@ -1,5 +1,10 @@
 import { combineReducers } from "redux";
-import { makeFetchingReducer, makeSetReducer } from "./utils";
+import {
+  makeFetchingReducer,
+  makeSetReducer,
+  reduceReducers,
+  makeCrudReducer,
+} from "./utils";
 
 export const setPending = () => {
   return {
@@ -27,7 +32,7 @@ export const fetchThunk = () => async (dispatch) => {
   }
 };
 
-export const filterReducer = makeSetReducer(['SET_FILTER']);
+export const filterReducer = makeSetReducer(["SET_FILTER"]);
 
 export const fetchingReducer = makeFetchingReducer([
   "PENDING_TODO",
@@ -35,27 +40,11 @@ export const fetchingReducer = makeFetchingReducer([
   "ERROR_TODO",
 ]);
 
-export const todosReducer = (state = [], action) => {
-  switch (action.type) {
-    case "ADD_TODO": {
-      return state.concat({ ...action.payload });
-    }
-    case "COMPLETE_TODO": {
-      const newTodos = state.map((todo) => {
-        if (todo.id === action.payload.id) {
-          return { ...todo, complete: !todo.complete };
-        }
-        return todo;
-      });
-      return newTodos;
-    }
-    case "FULLFILLED_TODO": {
-      return action.payload;
-    }
-    default:
-      return state;
-  }
-};
+const fullFilledReducer = makeSetReducer(["FULLFILLED_TODO"]);
+
+const crudReducer = makeCrudReducer(["ADD_TODO", "COMPLETE_TODO"]);
+
+export const todosReducer = reduceReducers(crudReducer, fullFilledReducer);
 
 export const reducer = combineReducers({
   todos: combineReducers({
