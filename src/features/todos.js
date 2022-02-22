@@ -4,21 +4,18 @@ import {
   makeSetReducer,
   reduceReducers,
   makeCrudReducer,
+  makeActionsCreators,
 } from "./utils";
 
-export const setPending = () => {
-  return {
-    type: "PENDING_TODO",
-  };
-};
+export const setPending = makeActionsCreators("SET_PENDING");
 
-export const setFulfilled = (payload) => ({ type: "FULLFILLED_TODO", payload });
+export const setFulfilled = makeActionsCreators("FULLFILLED_TODO", "payload");
 
-export const setError = (e) => ({ type: "ERROR_TODO", error: e.message });
+export const setError = makeActionsCreators("ERROR_TODO", "error");
 
-export const setComplete = (payload) => ({ type: "COMPLETE_TODO", payload });
+export const setComplete = makeActionsCreators("COMPLETE_TODO", "payload");
 
-export const setFilter = (payload) => ({ type: "SET_FILTER", payload });
+export const setFilter = makeActionsCreators("SET_FILTER", "payload");
 
 export const fetchThunk = () => async (dispatch) => {
   dispatch(setPending());
@@ -28,7 +25,7 @@ export const fetchThunk = () => async (dispatch) => {
     const todos = data.slice(0, 10);
     dispatch(setFulfilled(todos));
   } catch (e) {
-    dispatch(setError());
+    dispatch(setError(e.message));
   }
 };
 

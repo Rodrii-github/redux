@@ -1,8 +1,7 @@
 export const reduceReducers =
   (...reducers) =>
-  (state, action) => 
+  (state, action) =>
     reducers.reduce((acc, el) => el(acc, action), state);
-  
 
 const initialFetching = {
   loading: "idle",
@@ -39,13 +38,15 @@ export const makeSetReducer =
     }
   };
 
-  export const makeCrudReducer = actions => (state = [], action) => {
+export const makeCrudReducer =
+  (actions) =>
+  (state = [], action) => {
     switch (action.type) {
       case actions[0]: {
         return state.concat({ ...action.payload });
       }
       case actions[1]: {
-        const newEntities = state.map(entity => {
+        const newEntities = state.map((entity) => {
           if (entity.id === action.payload.id) {
             return { ...entity, complete: !entity.complete };
           }
@@ -56,4 +57,14 @@ export const makeSetReducer =
       default:
         return state;
     }
+  };
+
+export const makeActionsCreators =
+  (type, ...argNames) =>
+  (...args) => {
+    const action = { type };
+    argNames.forEach((arg, index) => {
+      action[argNames[index]] = args[index];
+    });
+    return action;
   };
