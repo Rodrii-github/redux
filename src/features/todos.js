@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import { makeFetchingReducer, makeSetReducer } from "./utils";
 
 export const setPending = () => {
   return {
@@ -26,35 +27,13 @@ export const fetchThunk = () => async (dispatch) => {
   }
 };
 
-export const filterReducer = (state = "ALL", action) => {
-  switch (action.type) {
-    case "SET_FILTER":
-      return action.payload;
-    default:
-      return state;
-  }
-};
+export const filterReducer = makeSetReducer(['SET_FILTER']);
 
-const initialFetching = {
-  loading: "idle",
-  error: null,
-};
-
-export const fetchingReducer = (state = initialFetching, action) => {
-  switch (action.type) {
-    case "PENDING_TODO": {
-      return { ...state, loading: "pending" };
-    }
-    case "FULLFILLED_TODO": {
-      return { ...state, loading: "success" };
-    }
-    case "ERROR_TODO": {
-      return { loading: "rejected", error: action.error };
-    }
-    default:
-      return state;
-  }
-};
+export const fetchingReducer = makeFetchingReducer([
+  "PENDING_TODO",
+  "FULLFILLED_TODO",
+  "ERROR_TODO",
+]);
 
 export const todosReducer = (state = [], action) => {
   switch (action.type) {
@@ -102,4 +81,3 @@ export const selectTodos = (state) => {
 };
 
 export const selectStatus = (state) => state.todos.status;
-
