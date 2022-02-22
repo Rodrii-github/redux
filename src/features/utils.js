@@ -68,3 +68,15 @@ export const makeActionsCreators =
     });
     return action;
   };
+
+export const makeAsyncTypes = (entity) => [
+  `PENDING_${entity}`,
+  `FULLFILLED_${entity}`,
+  `ERROR_${entity}`,
+];
+
+export const asyncMac = (asyncTypes) => [
+  makeActionsCreators(asyncTypes[0]),
+  makeActionsCreators(asyncTypes[1], "payload"),
+  makeActionsCreators(asyncTypes[2], "error"),
+];

@@ -5,16 +5,15 @@ import {
   reduceReducers,
   makeCrudReducer,
   makeActionsCreators,
+  makeAsyncTypes,
+  asyncMac,
 } from "./utils";
 
-export const setPending = makeActionsCreators("SET_PENDING");
+const asyncTodos = makeAsyncTypes("TODO");
 
-export const setFulfilled = makeActionsCreators("FULLFILLED_TODO", "payload");
-
-export const setError = makeActionsCreators("ERROR_TODO", "error");
+const [setPending, setFulfilled, setError] = asyncMac(asyncTodos);
 
 export const setComplete = makeActionsCreators("COMPLETE_TODO", "payload");
-
 export const setFilter = makeActionsCreators("SET_FILTER", "payload");
 
 export const fetchThunk = () => async (dispatch) => {
@@ -31,11 +30,7 @@ export const fetchThunk = () => async (dispatch) => {
 
 export const filterReducer = makeSetReducer(["SET_FILTER"]);
 
-export const fetchingReducer = makeFetchingReducer([
-  "PENDING_TODO",
-  "FULLFILLED_TODO",
-  "ERROR_TODO",
-]);
+export const fetchingReducer = makeFetchingReducer(asyncTodos);
 
 const fullFilledReducer = makeSetReducer(["FULLFILLED_TODO"]);
 
